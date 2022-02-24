@@ -1,0 +1,79 @@
+---
+# This is an example goreleaser.yaml file with some sane defaults.
+# Make sure to check the documentation at http://goreleaser.com
+project_name: urlenc
+
+before:
+  hooks:
+    - go mod download
+builds:
+  - main: ./main.go
+    id: "urlenc"
+    env:
+      - CGO_ENABLED=0
+      - GO111MODULE=on
+    goos:
+      - linux
+      - darwin
+      - freebsd
+      - openbsd
+      - netbsd
+      - solaris
+      - dragonfly
+      - windows
+    goarch:
+      - "386"
+      - amd64
+      - arm
+      - arm64
+
+archives:
+  - id: urlenc
+    builds:
+      - urlenc
+    wrap_in_directory: "true"
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: "checksums.txt"
+
+snapshot:
+  name_template: "{{ .Tag }}-next-{{.Commit}}"
+
+nfpms:
+  - maintainer: Simon Jürgensmeyyer <simon.juergensmeyer@gmail.com>
+    homepage: https://github.com/sj14/urlenc/
+    description: Convert an URL-encoded or URL-decoded input string.
+    license: MIT
+    formats:
+      - deb
+      - rpm
+    builds:
+      - urlenc
+
+brews:
+  - name: urlenc
+    ids:
+      - urlenc
+    tap:
+      owner: sj14
+      name: homebrew-tap
+    description: Convert an URL-encoded or URL-decoded input string.
+
+release:
+  github:
+    owner: sj14
+    name: urlenc
+  disable: false
+  draft: false
+  prerelease: "false"
+
+changelog:
+  filters:
+    exclude:
+      - typo
